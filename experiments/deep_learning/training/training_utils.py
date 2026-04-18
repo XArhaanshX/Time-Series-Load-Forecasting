@@ -1,80 +1,57 @@
-import numpy as np
 import torch
-from torch.utils.data import Dataset, DataLoader
+import torch.nn as nn
 import os
-import json
-import logging
+import numpy as np
 
-# Set up logging for training utils
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-class SequenceDataset(Dataset):
-    def __init__(self, X, y):
-        self.X = torch.tensor(X, dtype=torch.float32)
-        self.y = torch.tensor(y, dtype=torch.float32)
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, idx):
-        return self.X[idx], self.y[idx]
-
-def load_and_verify_data(dataset_dir):
-    """
-    Loads .npy tensors and performs strict shape/integrity verification.
-    """
-    try:
-        X_train = np.load(os.path.join(dataset_dir, "X_train.npy"))
-        X_test = np.load(os.path.join(dataset_dir, "X_test.npy"))
-        y_train = np.load(os.path.join(dataset_dir, "y_train.npy"))
-        y_test = np.load(os.path.join(dataset_dir, "y_test.npy"))
+def train_epoch(model, loader, criterion, optimizer, device, grad_clip=1.0):
+    model.train()
+    total_loss = 0
+    for X, y in loader:
+        X, y = X.to(device), y.to(device)
+        y = y.unsqueeze(1) # Match output shape (batch, 1)
         
-        # Log dimensions
-        print("\n--- Loaded Deep Learning Dataset ---")
-        print(f"Train Samples: {X_train.shape[0]}")
-        print(f"Test Samples: {X_test.shape[0]}")
-        print(f"Sequence Length: {X_train.shape[1]}")
-        print(f"Feature Count: {X_train.shape[2]}")
+        optimizer.zero_grad()
+        output = model(X)
+        loss = criterion(output, y)
+        loss.backward()
         
-        # Hard Failure Checks
-        if X_train.shape[1] != 96:
-            raise RuntimeError(f"HARD FAILURE: Expected sequence length 96, got {X_train.shape[1]}")
+        # Gradient Clipping
+        torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
         
-        if X_train.shape[0] != y_train.shape[0] or X_test.shape[0] != y_test.shape[0]:
-            raise RuntimeError("HARD FAILURE: Mismatch between features (X) and target (y) sample counts.")
-            
-        if np.isnan(X_train).any() or np.isnan(X_test).any() or np.isnan(y_train).any():
-            raise RuntimeError("HARD FAILURE: NaN values detected in input tensors.")
-            
-        return X_train, X_test, y_train, y_test
-        
-    except Exception as e:
-        logger.error(f"Error during data validation: {e}")
-        raise
+        optimizer.step()
+        total_loss += loss.item()
+    return total_loss / len(loader)
 
-def get_dataloaders(X_train, y_train, X_test, y_test, batch_size, val_split=0.2, seed=42):
-    """
-    Splits training data into train/val and returns DataLoaders.
-    """
-    num_train = len(X_train)
-    indices = list(range(num_train))
-    split = int(np.floor(val_split * num_train))
-    
-    # Shuffle for splitting but keep seed for reproducibility
-    np.random.seed(seed)
-    np.random.shuffle(indices)
-    
-    train_idx, val_idx = indices[split:], indices[:split]
-    
-    # Create Datasets
-    train_ds = SequenceDataset(X_train[train_idx], y_train[train_idx])
-    val_ds = SequenceDataset(X_train[val_idx], y_train[val_idx])
-    test_ds = SequenceDataset(X_test, y_test)
-    
-    # Create Loaders
-    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False)
-    
-    return train_loader, val_loader, test_loader
+def validate_epoch(model, loader, criterion, device):
+    model.eval()
+    total_loss = 0
+    with torch.no_grad():
+        for X, y in loader:
+            X, y = X.to(device), y.to(device)
+            y = y.unsqueeze(1) # Match output shape
+            output = model(X)
+            loss = criterion(output, y)
+            total_loss += loss.item()
+    return total_loss / len(loader)
+
+class EarlyStopping:
+    def __init__(self, patience=10, path="model_best.pt"):
+        self.patience = patience
+        self.path = path
+        self.counter = 0
+        self.best_loss = np.inf
+        self.early_stop = False
+
+    def __call__(self, val_loss, model):
+        if val_loss < self.best_loss:
+            self.best_loss = val_loss
+            self.save_checkpoint(model)
+            self.counter = 0
+        else:
+            self.counter += 1
+            if self.counter >= self.patience:
+                self.early_stop = True
+
+    def save_checkpoint(self, model):
+        """Saves model when validation loss decreases."""
+        torch.save(model.state_dict(), self.path)

@@ -4,23 +4,23 @@ import torch
 SEED = 42
 
 # Dataset Configuration
-DATASET_VERSION = "v2_sequence_dataset"
-SEQUENCE_LENGTH = 96
-VAL_SPLIT = 0.2
+DATASET_VERSION = "v3_sequence_dataset"
+DATASET_PATH = "experiments/deep_learning/dataset_v3"
+SEQUENCE_LENGTH = 192
 
 # Training Hyperparameters
 BATCH_SIZE = 64
 EPOCHS = 100
 LEARNING_RATE = 0.001
+GRAD_CLIP = 1.0
 
 # Callbacks
 EARLY_STOPPING_PATIENCE = 10
 
 # Paths
-RESULTS_FILE = "experiments/deep_learning/results/dl_model_results.csv"
-DATASET_DIR = "experiments/deep_learning/dataset"
-MODEL_SAVE_DIR = "experiments/deep_learning/models/saved_models"
+RESULTS_PATH = "experiments/deep_learning/results/dl_model_results.csv"
+CHECKPOINT_DIR = "experiments/deep_learning/models"
 LOG_DIR = "experiments/deep_learning/logs"
 
-# Global Device
+# Global Device handling
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")

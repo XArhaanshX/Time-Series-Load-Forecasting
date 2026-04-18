@@ -81,3 +81,19 @@ This document records the exact software environment and hyperparameter settings
 | **Train Samples** | 107,423 |
 | **Test Samples** | 34,944 |
 | **Split Logic** | Independent windowing per partition (96-step lag) |
+
+## Deep Learning Dataset (v3)
+
+| Component | Strategy / Value |
+| :--- | :--- |
+| **Dataset Version** | v3_sequence_dataset |
+| **Input Format** | 3D Tensors (Samples, TimeSteps, Features) |
+| **Sequence Length** | 192 (48 Hours) |
+| **Feature Count** | 45 (Sorted, Filtered via VarianceThreshold) |
+| **Tensor Precision** | float32 |
+| **Sanitization** | Bidirectional Fill (ffill + bfill) |
+| **Feature Scaling** | StandardScaler (Fitted on Train) |
+| **Target Scaling** | StandardScaler (Fitted on Train) |
+| **Train Sequences** | 107,327 |
+| **Test Sequences** | 34,848 |
+| **Split Logic** | Independent windowing per partition (192-step warmup) |

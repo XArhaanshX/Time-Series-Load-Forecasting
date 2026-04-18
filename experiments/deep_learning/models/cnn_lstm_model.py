@@ -2,37 +2,39 @@ import torch
 import torch.nn as nn
 
 class CNNLSTMModel(nn.Module):
-    def __init__(self, input_dim, conv_filters=32, lstm_units=64):
+    def __init__(self, input_dim, cnn_filters=32, lstm_hidden=64, dropout=0.2):
         super(CNNLSTMModel, self).__init__()
         
         # Conv1D expects (batch, channels, length)
-        # Our input is (batch, length, features)
-        self.conv1 = nn.Conv1d(in_channels=input_dim, out_channels=conv_filters, kernel_size=3)
+        # Our input is (batch, length, features) -> will need permutation
+        self.conv1 = nn.Conv1d(in_channels=input_dim, out_channels=cnn_filters, kernel_size=3, padding=1)
         self.relu1 = nn.ReLU()
-        
-        self.conv2 = nn.Conv1d(in_channels=conv_filters, out_channels=conv_filters, kernel_size=3)
+        self.conv2 = nn.Conv1d(in_channels=cnn_filters, out_channels=cnn_filters, kernel_size=3, padding=1)
         self.relu2 = nn.ReLU()
         
-        self.lstm = nn.LSTM(conv_filters, lstm_units, batch_first=True)
+        # After Conv, we permute back to (batch, length, filters) for LSTM
+        self.lstm = nn.LSTM(input_size=cnn_filters, hidden_size=lstm_hidden, batch_first=True)
         
-        self.fc = nn.Linear(lstm_units, 1)
-
+        self.dropout = nn.Dropout(dropout)
+        self.fc = nn.Linear(lstm_hidden, 1)
+        
     def forward(self, x):
-        # Permute to (batch, features, length) for Conv1d
-        x = x.permute(0, 2, 1)
+        # x: (batch, seq_len, input_dim)
         
-        out = self.conv1(x)
-        out = self.relu1(out)
+        # Conv1D path
+        x = x.permute(0, 2, 1) # (batch, channels, length)
+        x = self.conv1(x)
+        x = self.relu1(x)
+        x = self.conv2(x)
+        x = self.relu2(x)
         
-        out = self.conv2(out)
-        out = self.relu2(out)
+        # LSTM path
+        x = x.permute(0, 2, 1) # (batch, length, channels)
+        out, (h_n, _) = self.lstm(x)
         
-        # Permute back to (batch, length, features) for LSTM
-        out = out.permute(0, 2, 1)
+        # Last hidden state
+        last_hidden = h_n.squeeze(0)
         
-        out, _ = self.lstm(out)
-        
-        # Take the output of the last time step
-        out = out[:, -1, :]
+        out = self.dropout(last_hidden)
         out = self.fc(out)
-        return out.squeeze()
+        return out

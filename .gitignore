@@ -12,6 +12,8 @@ data/
 results/large_outputs/
 # Deep Learning additions
 experiments/deep_learning/dataset/
+experiments/deep_learning/dataset_v3/
+experiments/deep_learning/logs/
 *.npy
 catboost_info/
 scratch/

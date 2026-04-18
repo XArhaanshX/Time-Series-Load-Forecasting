@@ -11,7 +11,8 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 def compute_metrics(y_true, y_pred):
     """
-    Returns a dictionary of MAE, RMSE, and MAPE.
+    Returns MAE, RMSE, and MAPE.
+    Inputs are expected in MW scale (unscaled).
     """
     y_true = np.array(y_true).flatten()
     y_pred = np.array(y_pred).flatten()
