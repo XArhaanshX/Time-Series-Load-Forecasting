@@ -1,0 +1,10 @@
+{
+    "total_observations": 143232,
+    "optimal_lag": 96,
+    "features_selected": 38,
+    "matrix_shape": [
+        142463,
+        3649
+    ],
+    "splits_generated": 1
+}

@@ -1,0 +1,34 @@
+# Configuration for Haryana Load Forecasting Pipeline
+
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  feature_data: "data/features"
+  split_data: "data/splits"
+  results: "results"
+
+data:
+  frequency: "15min"
+  target_col: "load_MW"
+  timestamp_col: "timestamp"
+  excel:
+    date_row: 2
+    header_row: 5
+    data_row_start: 6
+    num_rows: 96
+
+analysis:
+  acf_lags: 700
+  pacf_lags: 200
+  stl_period: 96
+  z_score_threshold: 4.0
+
+features:
+  epsilon: 1.0e-6
+  rolling_windows: [4, 96, 672]
+  seasonal_lags: [1, 2, 3, 4, 8, 12, 24, 48, 96, 192, 672]
+  fourier_harmonics: 3
+
+validation:
+  test_size_years: 1
+  expanding_window: true

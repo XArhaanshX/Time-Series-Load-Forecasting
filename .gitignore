@@ -1,0 +1,12 @@
+data/
+*.parquet
+*.xlsx
+*.csv
+!experiments/classical_ml/results/model_results.csv
+*.joblib
+*.pkl
+*.log
+**pycache**/
+.ipynb_checkpoints/
+.DS_Store
+results/large_outputs/

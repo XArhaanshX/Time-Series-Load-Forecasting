@@ -1,0 +1,11 @@
+Model,MAE,RMSE,MAPE,Training_Time,Inference_Time,Random_Seed,Dataset_Version,Timestamp
+Persistence,114.50472288812786,180.45256865646397,1.6254382814472588,0.0,0.0016,42,v1_canonical_sliding_window,2026-04-18 04:08:00
+Seasonal Persistence,495.44492692967845,734.6916608408998,7.179748520116165,0.0,0.0005,42,v1_canonical_sliding_window,2026-04-18 04:08:00
+Linear Regression,128.2695,193.7598,1.8104,76.21,1.649,42,v1_canonical_sliding_window,2026-04-18 04:09:31
+Ridge,127.9765,193.5388,1.8061,32.18,1.2418,42,v1_canonical_sliding_window,2026-04-18 04:10:11
+Lasso,127.8717,194.7827,1.8048,4638.53,3.5333,42,v1_canonical_sliding_window,2026-04-18 05:27:41
+Random Forest,140.4023,212.696,1.946,3206.93,0.8897,42,v1_canonical_sliding_window,2026-04-18 06:21:39
+Gradient Boosting,136.4532,204.0432,1.8947,11327.11,2.7449,42,v1_canonical_sliding_window,2026-04-18 09:30:36
+XGBoost,149.7003,224.5228,2.1608,39.4,0.1892,42,v1_canonical_sliding_window,2026-04-18 13:36:02
+LightGBM,129.1907,195.1694,1.7879,50.84,0.2968,42,v1_canonical_sliding_window,2026-04-18 13:37:00
+CatBoost,138.8105,202.8735,1.9427,25.19,0.0701,42,v1_canonical_sliding_window,2026-04-18 13:37:32
