@@ -66,3 +66,18 @@ This document records the exact software environment and hyperparameter settings
 | **Dataset Shape** | 142,463 samples, 3,649 features |
 | **Random Seed** | 42 |
 | **Total Models** | 10 (2 Baselines, 8 ML Models) |
+
+## Deep Learning Dataset (v2)
+
+| Component | Strategy / Value |
+| :--- | :--- |
+| **Dataset Version** | v2_sequence_dataset |
+| **Input Format** | 3D Tensors (Samples, TimeSteps, Features) |
+| **Sequence Length** | 96 (24 Hours) |
+| **Feature Count** | 47 (Dynamically detected) |
+| **Tensor Precision** | float32 |
+| **Scaling** | StandardScaler (Features Only, Fitted on Train) |
+| **Target Scale** | Original MW Magnitude (Unscaled) |
+| **Train Samples** | 107,423 |
+| **Test Samples** | 34,944 |
+| **Split Logic** | Independent windowing per partition (96-step lag) |

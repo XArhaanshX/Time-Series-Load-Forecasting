@@ -10,3 +10,8 @@ data/
 .ipynb_checkpoints/
 .DS_Store
 results/large_outputs/
+# Deep Learning additions
+experiments/deep_learning/dataset/
+*.npy
+catboost_info/
+scratch/
