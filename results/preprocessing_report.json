@@ -1,8 +1,0 @@
-{
-    "files_read_success": 1390,
-    "files_skipped": 6,
-    "total_rows_final": 143232,
-    "missing_timestamps_inserted": 9792,
-    "outliers_replaced": 161,
-    "status": "Success"
-}

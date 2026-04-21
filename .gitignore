@@ -1,4 +1,7 @@
+# Data and temporary files
 data/
+catboost_info/
+scratch/
 *.parquet
 *.xlsx
 *.csv
@@ -6,14 +9,33 @@ data/
 *.joblib
 *.pkl
 *.log
-**pycache**/
 .ipynb_checkpoints/
-.DS_Store
-results/large_outputs/
-# Deep Learning additions
-experiments/deep_learning/dataset/
+
+# Deep learning datasets
 experiments/deep_learning/dataset_v3/
-experiments/deep_learning/logs/
+experiments/deep_learning/dataset/
+
+# Hybrid datasets
+experiments/hybrid_models/data/
+experiments/hybrid_tcn_models/data/
+
+# Generated tensors
 *.npy
-catboost_info/
-scratch/
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# Experiment logs and results
+**/logs/
+**/results/
+!experiments/classical_ml/results/
+!experiments/classical_ml/results/model_results.csv
+
+# Python artifacts
+**pycache**/
+*.pyc
+
+# System files
+.DS_Store
